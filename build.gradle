@@ -1,0 +1,63 @@
+/* ************************* *
+ * Gradle Plugin Definitions *
+ * ************************* */
+plugins {
+	id 'java'
+	id 'eclipse' 
+}
+
+/* ****************************** *
+ * Custom Variables defined below *
+ * ****************************** */
+def appVersion = "1.0.0"
+def releaseNumber = '0'
+
+def getDate() {
+	return (new Date()).format("MM-dd-yyyy HH:mm:ss")
+}
+
+def manifestAttributes = [
+	"Implementation-Title": "JSON Transformer",
+	"Implementation-Version": version,
+	"Implementation-Vendor": "Firebird CSS",
+	"Build-Date": getDate()
+]
+
+/* ****************************** *
+ * Application Definition Section *
+ * ****************************** */
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+group = "com.firebirdcss.api.json_transformer"
+version = appVersion
+
+/* ******************************** *
+ * The definition of source folders *
+ * ******************************** */
+sourceSets {
+	main {
+		java.srcDir "src/main/java"
+		resources.srcDir "src/main/resources"
+	}
+	
+	test {
+		java.srcDir "src/test/java"
+		resources.srcDir "src/test/resources"
+	}
+}
+
+/* ************************************ *
+ * Repository information goes below... *
+ * ************************************ */
+repositories {
+	mavenCentral()
+}
+
+/* ************************************ *
+ * Dependency information goes below... *
+ * ************************************ */
+dependencies {
+	compile 'log4j:log4j:+' // Required Logging related components
+	
+	testCompile 'junit:junit:4.12' // Used by JUnit tests.
+}
