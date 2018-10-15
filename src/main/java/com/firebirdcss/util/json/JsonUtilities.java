@@ -30,10 +30,18 @@ public class JsonUtilities {
 	private static final String DEFAULT_HTML_STYLE = 
 			  "table, th, td {"
 			+ "    border: 1px solid black;"
+			+ "}"
+			+ "tr:hover {"
+			+ "    background-color: #f5f5f5;"
+			+ "}"
+			+ "td {"
 			+ "    padding: 5px;"
 			+ "}"
 			+ "table {"
 			+ "    width: 100%;"
+			+ "}"
+			+ ".headings {"
+			+ "    font-weight:bold;"
 			+ "}";
 	
 	/**
@@ -60,56 +68,50 @@ public class JsonUtilities {
 				}
 				
 				switch (item.getCharType()) {
-					case COLON:
-						if (prevType != CharType.DOUBLE_QUOTE) {
+					case COLON: // <-------------------------------------------------------{ ':'
+						if (prevType != CharType.DOUBLE_QUOTE) { // Quotes end their own <td>...
 							sb.append("</td>");
 						}
-						if (nextItem != null && nextItem.getCharType() != CharType.DOUBLE_QUOTE) {
+						if (nextItem != null 
+								&& (nextItem.getCharType() != CharType.DOUBLE_QUOTE  // Quotes handle own </td>...
+									&& nextItem.getCharType() != CharType.SQUARE_BRACKET)) { // Square brackets handle own </td>...
 							sb.append("<td>");
 						}
 						break;
-					case COMMA:
-						if (prevType != null) {
-							if (prevType == CharType.COLON 
-									|| prevType == CharType.SQUARE_BRACKET
-							) {
-								sb.append("</td>");
-							}
-							if (prevType == CharType.SQUARE_BRACKET) {
-								sb.append("</tr>");
-							}
+					case COMMA: // <-------------------------------------------------------{ ','
+						if (prevType == CharType.COLON) { // Square brackets handle their own </td>...
+							sb.append("</td>");
+						} 
+						if (prevType != CharType.CURLY_BRACKET) {
+							sb.append("</tr>");
 						}
 						break;
-					case CURLY_BRACKET:
+					case CURLY_BRACKET: // <-----------------------------------------------{ '{ or }'
 						if (isOpen) {
 							sb.append("<table>");
 						} else {
-							if (prevType == CharType.COLON || prevType == CharType.DOUBLE_QUOTE) {
-								sb.append("</tr>");
-							}
+							sb.append("</tr>");
 							sb.append("</table>");
 						}
 						break;
-					case DOUBLE_QUOTE:
+					case DOUBLE_QUOTE: // <------------------------------------------------{ '"'
 						if (isOpen) {
-							if (prevType != null) {
-								if (prevType != CharType.COLON) {
-									sb.append("<tr>");
-								}
+							if (prevType != CharType.COLON) { // Front Open...
+								sb.append("<tr>");
+								sb.append("<td class=\"headings\">");
+							} else { // Back open...
+								sb.append("<td>"); // Front and back open...
 							}
+							
+						} else { // Front and back close...
+							sb.append("</td>");
+						}
+						break;
+					case SQUARE_BRACKET: // <----------------------------------------------{ '[ or ]'
+						if (isOpen) {
 							sb.append("<td>");
 						} else {
 							sb.append("</td>");
-							if (nextItem != null && nextItem.getCharType() != CharType.COLON) {
-								sb.append("</tr>");
-							}
-						}
-						break;
-					case SQUARE_BRACKET:
-						if (isOpen) {
-							sb.append("<table>");
-						} else {
-							sb.append("</table>");
 						}
 						break;
 				}
