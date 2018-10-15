@@ -43,6 +43,7 @@ public class JsonUtilities {
 			+ ".headings {"
 			+ "    font-weight:bold;"
 			+ "}";
+	private static final String DEFAULT_HTML_TITLE = "JSON to HTML";
 	
 	/**
 	 * This method converts a given JSON {@link String} to an HTML Document.
@@ -51,6 +52,24 @@ public class JsonUtilities {
 	 * @return Returns the HTML rendered JSON as {@link String}
 	 */
 	public static String jsonToHtml(String json) {
+		
+		return jsonToHtml(DEFAULT_HTML_TITLE, DEFAULT_HTML_STYLE, json);
+	}
+	
+	/**
+	 * This method converts a given JSON {@link String} to an HTML Document.
+	 * It also allows for a title to be given to the generated document as well
+	 * as for style to be injected. <br>
+	 * When injecting style you do not need to worry about the HTML style tags.
+	 * Also, a class of "headings" is added to the 'td' tag of all the JSON key fields
+	 * so that one may target that class with style.
+	 * 
+	 * @param title - The title of the JSON Document as {@link String}
+	 * @param style - The internal style portion of the HTML file as {@link String}
+	 * @param json - The JSON Document to convert to HTML as {@link String}
+	 * @return Returns the rendered HTML as a {@link String}
+	 */
+	public static String jsonToHtml(String title, String style, String json) {
 		MappedItems jsonMap = new MappedItems(mapJson(json));
 		
 		StringBuilder sb = new StringBuilder();
@@ -129,7 +148,7 @@ public class JsonUtilities {
 		/* Swap out the template variables for the desired content */
 		String htmlDoc = HTML_TEMPLATE.replace("${body}", sb.toString());
 		htmlDoc = htmlDoc.replace("${title}", "UNKNOWN");
-		htmlDoc = htmlDoc.replace("${style}", DEFAULT_HTML_STYLE);
+		htmlDoc = htmlDoc.replace("${style}", style);
 		
 		return htmlDoc;
 	}
