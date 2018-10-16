@@ -92,8 +92,9 @@ public class JsonUtilities {
 							sb.append("</td>");
 						}
 						if (nextItem != null 
-								&& (nextItem.getCharType() != CharType.DOUBLE_QUOTE  // Quotes handle own </td>...
-									&& nextItem.getCharType() != CharType.SQUARE_BRACKET)) { // Square brackets handle own </td>...
+								&& nextItem.getCharType() != CharType.DOUBLE_QUOTE  // Quotes handle own </td>...
+								&& nextItem.getCharType() != CharType.SQUARE_BRACKET // Square brackets handle own </td>...
+						) {
 							sb.append("<td>");
 						}
 						break;
@@ -109,6 +110,9 @@ public class JsonUtilities {
 						if (isOpen) { // <-------------------------------------------------{ '{'
 							sb.append("<table>");
 						} else { // <------------------------------------------------------{ '}'
+							if (prevType == CharType.COLON) {
+								sb.append("</td>");
+							}
 							sb.append("</tr>");
 							sb.append("</table>");
 						}

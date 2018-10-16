@@ -128,14 +128,37 @@ public class MappedItems {
 	 * @return Returns the {@link MappedItem} or null
 	 */
 	public MappedItem getItemAfterIndex(int index) {
+		MappedItem closestResult = null;
+		
 		for (MappedItem item : mappedItems) {
-			if (item.getOpenIndex() > index) {
-				
-				return item;
+			Integer targetToBeat = null;
+			if (closestResult != null) {
+				int resultOpenDiff = closestResult.getOpenIndex() - index;
+				int resultCloseDiff = closestResult.getCloseIndex() - index;
+				if (resultOpenDiff > 0) {
+					targetToBeat = Integer.valueOf(resultOpenDiff);
+				}
+				if (resultCloseDiff > 0 && (targetToBeat == null || resultCloseDiff < targetToBeat.intValue())) {
+					targetToBeat = Integer.valueOf(resultCloseDiff);
+				}
 			}
+			int itemOpenDiff = item.getOpenIndex() - index;
+			int itemCloseDiff = item.getCloseIndex() - index;
+			if (targetToBeat == null) {
+				if (itemOpenDiff > 0 || itemCloseDiff > 0) {
+					closestResult = item;
+				}
+			} else {
+				if ((itemOpenDiff > 0 && itemOpenDiff < targetToBeat.intValue()) 
+						|| (itemCloseDiff > 0 && itemCloseDiff < targetToBeat.intValue())
+				) {
+					closestResult = item;
+				}
+			}
+				
 		}
 		
-		return null;
+		return closestResult;
 	}
 	
 	/**
