@@ -9,7 +9,7 @@ plugins {
 /* ****************************** *
  * Custom Variables defined below *
  * ****************************** */
-def appVersion = "1.0.1"
+def appVersion = "1.0.2"
 def releaseNumber = '0'
 
 def getDate() {
