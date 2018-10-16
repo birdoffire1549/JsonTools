@@ -242,6 +242,7 @@ public class JsonUtilities {
 	 * 
 	 * @param args - Not used.
 	 */
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		String json = 
 				"{\n" + 
