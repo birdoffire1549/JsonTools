@@ -1,10 +1,10 @@
-package com.firebirdcss.util.json;
+package com.firebirdcss.util.json_tools;
 
 import java.util.ArrayList;
 
-import com.firebirdcss.util.json.mapping.CharType;
-import com.firebirdcss.util.json.mapping.MappedItem;
-import com.firebirdcss.util.json.mapping.MappedItems;
+import com.firebirdcss.util.json_tools.mapping.CharType;
+import com.firebirdcss.util.json_tools.mapping.MappedItem;
+import com.firebirdcss.util.json_tools.mapping.MappedItems;
 
 /**
  * This class contains utility methods which help do various things with JSON.

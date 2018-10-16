@@ -1,4 +1,4 @@
-package com.firebirdcss.util.json.mapping;
+package com.firebirdcss.util.json_tools.mapping;
 
 import java.util.ArrayList;
 

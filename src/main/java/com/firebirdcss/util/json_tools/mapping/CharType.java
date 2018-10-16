@@ -1,4 +1,4 @@
-package com.firebirdcss.util.json.mapping;
+package com.firebirdcss.util.json_tools.mapping;
 
 /**
  * ENUMs which represent the type of Characters which

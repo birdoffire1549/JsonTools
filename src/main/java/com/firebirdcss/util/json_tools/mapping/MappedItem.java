@@ -1,4 +1,4 @@
-package com.firebirdcss.util.json.mapping;
+package com.firebirdcss.util.json_tools.mapping;
 
 /**
  * This class stores information related to a MappedItem.

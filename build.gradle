@@ -17,7 +17,7 @@ def getDate() {
 }
 
 def manifestAttributes = [
-	"Implementation-Title": "JSON Transformer",
+	"Implementation-Title": "JSON Tools",
 	"Implementation-Version": version,
 	"Implementation-Vendor": "Firebird CSS",
 	"Build-Date": getDate()
@@ -28,7 +28,7 @@ def manifestAttributes = [
  * ****************************** */
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-group = "com.firebirdcss.api.json_transformer"
+group = "com.firebirdcss.util.json_tools"
 version = appVersion
 
 /* ******************************** *
