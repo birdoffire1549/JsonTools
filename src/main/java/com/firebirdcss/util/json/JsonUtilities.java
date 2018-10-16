@@ -18,30 +18,30 @@ public class JsonUtilities {
 			  "<!DOCTYPE html>"
 			+ "<html>"
 			+ "<head>"
-			+ "    <title>${title}</title>"
-			+ "    <style>"
-			+ "        ${style}"
-			+ "    </style>"
+			+     "<title>${title}</title>"
+			+     "<style>"
+			+         "${style}"
+			+     "</style>"
 			+ "</head>"
 			+ "<body>"
-			+ "    ${body}"
+			+     "${body}"
 			+ "</body>"
 			+ "</html>";
 	private static final String DEFAULT_HTML_STYLE = 
 			  "table, th, td {"
-			+ "    border: 1px solid black;"
+			+     "border: 1px solid black;"
 			+ "}"
 			+ "tr:hover {"
-			+ "    background-color: #f5f5f5;"
+			+     "background-color: #f5f5f5;"
 			+ "}"
 			+ "td {"
-			+ "    padding: 5px;"
+			+     "padding: 5px;"
 			+ "}"
 			+ "table {"
-			+ "    width: 100%;"
+			+     "width: 100%;"
 			+ "}"
 			+ ".headings {"
-			+ "    font-weight:bold;"
+			+     "font-weight:bold;"
 			+ "}";
 	private static final String DEFAULT_HTML_TITLE = "JSON to HTML";
 	
@@ -147,7 +147,7 @@ public class JsonUtilities {
 		
 		/* Swap out the template variables for the desired content */
 		String htmlDoc = HTML_TEMPLATE.replace("${body}", sb.toString());
-		htmlDoc = htmlDoc.replace("${title}", "UNKNOWN");
+		htmlDoc = htmlDoc.replace("${title}", title);
 		htmlDoc = htmlDoc.replace("${style}", style);
 		
 		return htmlDoc;
@@ -272,7 +272,11 @@ public class JsonUtilities {
 				"    }\n" + 
 				"  ]\n" + 
 				"}";
+		String style = 
+				 "table, th, td {"
+				+    "border: 1px solid black;"
+				+ "}";
 		
-		System.out.println(jsonToHtml(json));
+		System.out.println(jsonToHtml("", style, json));
 	}
 }
