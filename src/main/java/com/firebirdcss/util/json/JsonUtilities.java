@@ -243,40 +243,37 @@ public class JsonUtilities {
 	 * @param args - Not used.
 	 */
 	public static void main(String[] args) {
-		String json = "{ \n" + 
-				"  \"first_name\" : \"Sammy\",\n" + 
-				"  \"last_name\" : \"Shark\",\n" + 
-				"  \"location\" : \"Ocean\",\n" + 
-				"  \"websites\" : [ \n" + 
-				"    {\n" + 
-				"      \"description\" : \"work\",\n" + 
-				"      \"URL\" : \"https://www.digitalocean.com/\"\n" + 
-				"    },\n" + 
-				"    {\n" + 
-				"      \"desciption\" : \"tutorials\",\n" + 
-				"      \"URL\" : \"https://www.digitalocean.com/community/tutorials\"\n" + 
-				"    }\n" + 
-				"  ],\n" + 
-				"  \"social_media\" : [\n" + 
-				"    {\n" + 
-				"      \"description\" : \"twitter\",\n" + 
-				"      \"link\" : \"https://twitter.com/digitalocean\"\n" + 
-				"    },\n" + 
-				"    {\n" + 
-				"      \"description\" : \"facebook\",\n" + 
-				"      \"link\" : \"https://www.facebook.com/DigitalOceanCloudHosting\"\n" + 
-				"    },\n" + 
-				"    {\n" + 
-				"      \"description\" : \"github\",\n" + 
-				"      \"link\" : \"https://github.com/digitalocean\"\n" + 
-				"    }\n" + 
-				"  ]\n" + 
-				"}";
+		String json = 
+				"{\n" + 
+				"	\"id\": \"0001\",\n" + 
+				"	\"type\": \"donut\",\n" + 
+				"	\"name\": \"Cake\",\n" + 
+				"	\"ppu\": 0.55,\n" + 
+				"	\"batters\":\n" + 
+				"		{\n" + 
+				"			\"batter\":\n" + 
+				"				[\n" + 
+				"					{ \"id\": \"1001\", \"type\": \"Regular\" },\n" + 
+				"					{ \"id\": \"1002\", \"type\": \"Chocolate\" },\n" + 
+				"					{ \"id\": \"1003\", \"type\": \"Blueberry\" },\n" + 
+				"					{ \"id\": \"1004\", \"type\": \"Devil's Food\" }\n" + 
+				"				]\n" + 
+				"		},\n" + 
+				"	\"topping\":\n" + 
+				"		[\n" + 
+				"			{ \"id\": \"5001\", \"type\": \"None\" },\n" + 
+				"			{ \"id\": \"5002\", \"type\": \"Glazed\" },\n" + 
+				"			{ \"id\": \"5005\", \"type\": \"Sugar\" },\n" + 
+				"			{ \"id\": \"5007\", \"type\": \"Powdered Sugar\" },\n" + 
+				"			{ \"id\": \"5006\", \"type\": \"Chocolate with Sprinkles\" },\n" + 
+				"			{ \"id\": \"5003\", \"type\": \"Chocolate\" },\n" + 
+				"			{ \"id\": \"5004\", \"type\": \"Maple\" }\n" + 
+				"	";
 		String style = 
 				 "table, th, td {"
 				+    "border: 1px solid black;"
 				+ "}";
 		
-		System.out.println(jsonToHtml("", style, json));
+		System.out.println(jsonToHtml(json));
 	}
 }
