@@ -1,10 +1,13 @@
 package com.firebirdcss.util.json_tools;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firebirdcss.util.json_tools.mapping.CharType;
 import com.firebirdcss.util.json_tools.mapping.MappedItem;
-import com.firebirdcss.util.json_tools.mapping.MappedItems;
 
 /**
  * This class contains utility methods which help do various things with JSON.
@@ -13,7 +16,6 @@ import com.firebirdcss.util.json_tools.mapping.MappedItems;
  *
  */
 public class JsonUtilities {
-	private static final String NON_SIG_CHARS = " \n\r\t";
 	private static final String HTML_TEMPLATE = 
 			  "<!DOCTYPE html>"
 			+ "<html>"
@@ -28,18 +30,17 @@ public class JsonUtilities {
 			+ "</body>"
 			+ "</html>";
 	private static final String DEFAULT_HTML_STYLE = 
-			  "table {"
-			+     "width: 100%;"
-			+     "table-layout: fixed;"
-			+     "word-wrap: break-word;"
-			+ "}"
-			+ "table, th, td {"
+			  "table, tr, td {"
 			+     "border: 1px solid black;"
+			+     "border-style: solid;"
 			+ "}"
-			+ "td {"
-			+     "padding: 5px;"
+			+ "div {"
+			+     "padding: 0px 5px;"
 			+ "}"
-			+ ".headings {"
+			+ "table {"
+			+     "width: 100%;"
+			+ "}"
+			+ ".key {"
 			+     "font-weight:bold;"
 			+ "}";
 	private static final String DEFAULT_HTML_TITLE = "JSON to HTML";
@@ -69,91 +70,112 @@ public class JsonUtilities {
 	 * @return Returns the rendered HTML as a {@link String}
 	 */
 	public static String jsonToHtml(String title, String style, String json) {
-		MappedItems jsonMap = new MappedItems(mapJson(json));
-		
 		StringBuilder sb = new StringBuilder();
-		CharType prevType = null;
-		for (int i = 0; i < json.length(); i++) {
-			char c = json.charAt(i);
-			MappedItem item = jsonMap.getItemByIndex(i);
-			MappedItem nextItem = jsonMap.getItemAfterIndex(i);
+		
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode rootNode = mapper.readValue(json, JsonNode.class);
 			
-			if (item != null) {
-				boolean isOpen = false;
-				
-				if (i == item.getOpenIndex()) {
-					isOpen = true;
+			if (rootNode != null) {
+				if (rootNode.isObject()) { // <-------------------{Object
+					sb.append(htmlConvertJsonObject(rootNode));
+				} else if (rootNode.isArray()) { // <-------------{Array
+					sb.append(htmlConvertJsonArray(rootNode));
+				} else { // <-------------------------------------{Value
+					sb
+						.append("<table>")
+							.append("<tr>")
+								.append("<div class=\"value\">")
+									.append(rootNode.asText())
+								.append("</div>")
+							.append("</tr>")
+						.append("</table>")
+					;
 				}
-				
-				switch (item.getCharType()) {
-					case COLON: // <-------------------------------------------------------{ ':'
-						if (prevType != CharType.DOUBLE_QUOTE) { // Quotes end their own <td>...
-							sb.append("</td>");
-						}
-						if (nextItem != null 
-								&& nextItem.getCharType() != CharType.DOUBLE_QUOTE  // Quotes handle own </td>...
-								&& nextItem.getCharType() != CharType.SQUARE_BRACKET // Square brackets handle own </td>...
-						) {
-							sb.append("<td>");
-						}
-						break;
-					case COMMA: // <-------------------------------------------------------{ ','
-						if (prevType == CharType.COLON) { // Square brackets handle their own </td>...
-							sb.append("</td>");
-						} 
-						if (prevType != CharType.CURLY_BRACKET) {
-							sb.append("</tr>");
-						}
-						break;
-					case CURLY_BRACKET:
-						if (isOpen) { // <-------------------------------------------------{ '{'
-							sb.append("<table>");
-						} else { // <------------------------------------------------------{ '}'
-							if (prevType == CharType.COLON) {
-								sb.append("</td>");
-							}
-							sb.append("</tr>");
-							sb.append("</table>");
-						}
-						break;
-					case DOUBLE_QUOTE: // <------------------------------------------------{ '"'
-						if (isOpen) {
-							if (prevType != CharType.COLON) { // Front Open...
-								sb.append("<tr>");
-								sb.append("<td class=\"headings\">");
-							} else { // Back open...
-								sb.append("<td>"); // Front and back open...
-							}
-							
-						} else { // Front and back close...
-							sb.append("</td>");
-						}
-						break;
-					case SQUARE_BRACKET:
-						if (isOpen) { // <-------------------------------------------------{ '['
-							sb.append("<td>");
-						} else { // <------------------------------------------------------{ ']'
-							sb.append("</td>");
-						}
-						break;
-				}
-				
-				prevType = item.getCharType();
-				
-				continue; // Skip this char...
+
 			}
-			
-			if (NON_SIG_CHARS.indexOf(c) == -1) { // Char is significant...
-				sb.append(c);
-			}
+		} catch (Exception e) {
+			// TODO: Will decide what to do here later...
 		}
 		
 		/* Swap out the template variables for the desired content */
-		String htmlDoc = HTML_TEMPLATE.replace("${body}", sb.toString());
-		htmlDoc = htmlDoc.replace("${title}", title);
+		String htmlDoc = HTML_TEMPLATE.replace("${title}", title);
 		htmlDoc = htmlDoc.replace("${style}", style);
+		htmlDoc = htmlDoc.replace("${body}", sb.toString());
 		
 		return htmlDoc;
+	}
+	
+	/**
+	 * PRIVATE: 
+	 * 
+	 * @param objectNode
+	 * @return
+	 */
+	private static String htmlConvertJsonObject(JsonNode objectNode) {
+		StringBuilder sb = new StringBuilder();
+		Iterator<Entry<String, JsonNode>> entries = objectNode.fields();
+		
+		sb.append("<table>");
+		while (entries.hasNext()) {
+			Entry<String, JsonNode> entry = entries.next();
+			sb
+				.append("<tr>")
+					.append("<td>")
+						.append("<div class=\"key\">")
+							.append(entry.getKey())
+						.append("</div>")
+					.append("</td>")
+					.append("<td>")
+			;
+			if (entry.getValue().isObject()) { // <---------------{Object
+				sb.append(htmlConvertJsonObject(entry.getValue()));
+			} else if (entry.getValue().isArray()) { // <---------{Array
+				sb.append(htmlConvertJsonArray(entry.getValue()));
+			} else { // <-----------------------------------------{Value
+				sb
+					.append("<div class=\"value\">")
+						.append(entry.getValue().asText())
+					.append("</div>")
+				;
+			}
+			sb.append("</td>").append("</tr>");
+		}
+		sb.append("</table>");
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * PRIVATE: 
+	 * 
+	 * @param arrayNode
+	 * @return
+	 */
+	private static String htmlConvertJsonArray(JsonNode arrayNode) {
+		StringBuilder sb = new StringBuilder();
+		Iterator<JsonNode> elements = arrayNode.elements();
+		
+		sb.append("<table>");
+		while (elements.hasNext()) {
+			JsonNode value = elements.next();
+			sb.append("<tr><td>");
+			if (value.isObject()) {
+				sb.append(htmlConvertJsonObject(value));
+			} else if (value.isArray()) {
+				sb.append(htmlConvertJsonArray(value));
+			} else {
+				sb
+					.append("<div class=\"value\">")
+						.append(value.asText())
+					.append("</div>")
+				;
+			}
+			sb.append("</td></tr>");
+		}
+		sb.append("</table>");
+		
+		return sb.toString();
 	}
 	
 	/**
@@ -237,5 +259,46 @@ public class JsonUtilities {
 		}
 		
 		return -1;
+	}
+	
+	/**
+	 * TODO: Remove this method when finished with this code.
+	 * This stuff should be replaced with actual JUNIT tests.
+	 * 
+	 * @param args - Not used.
+	 */
+	public static void main(String[] args) {
+		String json = "{ \n" + 
+				"  \"first_name\" : \"Sammy\",\n" + 
+				"  \"last_name\" : \"Shark\",\n" + 
+				"  \"location\" : \"Ocean\",\n" + 
+				"  \"websites\" : [ \n" + 
+				"    {\n" + 
+				"      \"description\" : \"work\",\n" + 
+				"      \"URL\" : \"https://www.digitalocean.com/\"\n" + 
+				"    },\n" + 
+				"    {\n" + 
+				"      \"desciption\" : \"tutorials\",\n" + 
+				"      \"URL\" : \"https://www.digitalocean.com/community/tutorials\"\n" + 
+				"    }\n" + 
+				"  ],\n" + 
+				"  \"social_media\" : [\n" + 
+				"    {\n" + 
+				"      \"description\" : \"twitter\",\n" + 
+				"      \"link\" : \"https://twitter.com/digitalocean\"\n" + 
+				"    },\n" + 
+				"    {\n" + 
+				"      \"description\" : \"facebook\",\n" + 
+				"      \"link\" : \"https://www.facebook.com/DigitalOceanCloudHosting\"\n" + 
+				"    },\n" + 
+				"    {\n" + 
+				"      \"description\" : \"github\",\n" + 
+				"      \"link\" : \"https://github.com/digitalocean\"\n" + 
+				"    }\n" + 
+				"  ]\n" + 
+				"}";
+		String style = DEFAULT_HTML_STYLE;
+		
+		System.out.println(jsonToHtml("", style, json));
 	}
 }
