@@ -61,8 +61,9 @@ public class JsonUtilities {
 	 * It also allows for a title to be given to the generated document as well
 	 * as for style to be injected. <br>
 	 * When injecting style you do not need to worry about the HTML style tags.
-	 * Also, a class of "headings" is added to the 'td' tag of all the JSON key fields
-	 * so that one may target that class with style.
+	 * Also, a class of "key" is added to 'div' tags around all the JSON key fields, 
+	 * and a "value" class to the 'div' tags around all of the values so that one 
+	 * may target those classes with style.
 	 * 
 	 * @param title - The title of the JSON Document as {@link String}
 	 * @param style - The internal style portion of the HTML file as {@link String}
@@ -101,16 +102,20 @@ public class JsonUtilities {
 		/* Swap out the template variables for the desired content */
 		String htmlDoc = HTML_TEMPLATE.replace("${title}", title);
 		htmlDoc = htmlDoc.replace("${style}", style);
+		/*
+		 * NOTE: It is IMPORTANT that the ${body} tag be replaced last lest one takes a BIG HIT on the
+		 * performance of the replace REGEX if the body is HUGE.
+		 */
 		htmlDoc = htmlDoc.replace("${body}", sb.toString());
 		
 		return htmlDoc;
 	}
 	
 	/**
-	 * PRIVATE: 
+	 * PRIVATE: This method is used to convert a JSON Object to HTML Table. 
 	 * 
-	 * @param objectNode
-	 * @return
+	 * @param objectNode - The object node as {@link JsonNode}
+	 * @return Returns the HTML converted JSON as {@link String}
 	 */
 	private static String htmlConvertJsonObject(JsonNode objectNode) {
 		StringBuilder sb = new StringBuilder();
@@ -147,10 +152,10 @@ public class JsonUtilities {
 	}
 	
 	/**
-	 * PRIVATE: 
+	 * PRIVATE: This method is used to convert a JsonArray to HTML Table.
 	 * 
-	 * @param arrayNode
-	 * @return
+	 * @param arrayNode - The array node as {@link JsonNode}
+	 * @return Returns the HTML converted JSON as {@link String}
 	 */
 	private static String htmlConvertJsonArray(JsonNode arrayNode) {
 		StringBuilder sb = new StringBuilder();
